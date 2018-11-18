@@ -4,6 +4,9 @@
   "main": "index.js",
   "repository": {},
   "license": "MIT",
+  "scripts": {
+  	"start": "node index.js"
+  },
   "dependencies": {
     "bluebird": "^3.5.0"
   }
