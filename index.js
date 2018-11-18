@@ -1,11 +1,10 @@
 const Promise = require('bluebird')
-let fs = require('fs')
-fs = Promise.promisifyAll(fs)
+const fs = Promise.promisifyAll(require('fs'))
+const Parser = require('./Parser')
 
 async function readAndCount() {
   try {
     const rawData = await fs.readFileAsync('/var/log/keystroke.log', 'utf-8')
-    const Parser = require('./Parser')
     const parser = new Parser(rawData)
     const table = {}
     let currentKey = parser.nextKey()
@@ -21,6 +20,26 @@ async function readAndCount() {
 }
 
 readAndCount()
-  .then(table => 
-    console.log(JSON.stringify(table, null, '  '))
-  )
+  .then(sort)
+  // .then(countSum)
+
+function sort(table) {
+  const sortedTable = Object.entries(table).sort(sortByStroke)
+  sortedTable.forEach(([key, value]) => table[key] = value)
+  sortedTable.forEach(([key, value]) => console.log(`${key}: ${value}`))
+}
+
+function sortByKey(prev, cur) {
+  return prev[0] > cur[0] ? 1 : -1
+}
+
+function sortByStroke(prev, cur) {
+  return prev[1] > cur[1] ? 1 : -1
+}
+
+function countSum(table) {
+  /* count total stroke times */
+  console.log(table.reduce((total, cur) => {
+    return (+cur[1])+total
+  }, 0))
+}

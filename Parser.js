@@ -1,3 +1,5 @@
+const ignoreChars = new Set('\n')
+
 class Parser {
   constructor(rawData) {
     this.index = 0
@@ -11,9 +13,13 @@ class Parser {
     let keepReading = false
     do {
       let currentChar = this.rawData[this.index++]
-      if (currentChar === '[') keepReading = true
-      if (currentChar === ']') keepReading = false
-      buffer.push(currentChar)
+      if (ignoreChars.has(currentChar)) {
+        keepReading = true
+      } else {
+        if (currentChar === '[') keepReading = true
+        if (currentChar === ']') keepReading = false
+        buffer.push(currentChar)
+      }
     } while (keepReading)
     let key = buffer.join('')
     if (key.length > 1 && !this.isSpecialKey(key)) {
